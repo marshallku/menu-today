@@ -4,9 +4,9 @@ use handlebars::Handlebars;
 pub fn render_svg(meal: &Meal) -> String {
     let mut handlebars = Handlebars::new();
     let svg_template = r##"<svg
-    width="450"
+    width="{{svg_width}}"
     height="200"
-    viewBox="0 0 450 200"
+    viewBox="0 0 {{svg_width}} 200"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -18,25 +18,25 @@ pub fn render_svg(meal: &Meal) -> String {
         </style>
     </defs>
     <g clip-path="url(#clip0_1_2)">
-        <rect width="450" height="200" fill="white" />
+        <rect width="{{svg_width}}" height="200" fill="white" />
         <mask
             id="mask0_1_2"
             style="mask-type: alpha"
             maskUnits="userSpaceOnUse"
-            x="254"
+            x="{{image_x}}"
             y="0"
             width="200"
             height="200"
         >
             <rect
-                x="254"
+                x="{{image_x}}"
                 width="200"
                 height="200"
                 fill="url(#paint0_linear_1_2)"
             />
         </mask>
         <g mask="url(#mask0_1_2)">
-            <rect x="250" width="200" height="200" fill="url(#pattern0)" />
+            <rect x="{{image_x}}" width="200" height="200" fill="url(#pattern0)" />
         </g>
     </g>
     <text
@@ -85,7 +85,7 @@ pub fn render_svg(meal: &Meal) -> String {
             <stop offset="1" stop-opacity="0" />
         </linearGradient>
         <clipPath id="clip0_1_2">
-            <rect width="450" height="200" fill="white" />
+            <rect width="{{svg_width}}" height="200" fill="white" />
         </clipPath>
         <image
             id="image0_1_2"
@@ -100,12 +100,16 @@ pub fn render_svg(meal: &Meal) -> String {
         .register_template_string("svg_template", svg_template)
         .unwrap();
 
+    let svg_width = std::cmp::max(meal.strMeal.len() * 17, 450);
+    let image_x = svg_width - 200;
     let data = {
         let mut m = std::collections::BTreeMap::new();
         m.insert("meal_name", meal.strMeal.clone());
         m.insert("meal_country", meal.strArea.clone());
         m.insert("meal_category", meal.strCategory.clone());
         m.insert("meal_thumbnail", meal.strMealThumb.clone());
+        m.insert("svg_width", svg_width.to_string());
+        m.insert("image_x", image_x.to_string());
         m
     };
 
