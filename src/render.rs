@@ -1,7 +1,7 @@
 use crate::fetcher::Meal;
 use handlebars::Handlebars;
 
-pub fn render_svg(meal: &Meal) -> String {
+pub fn render_svg(meal: &Meal, theme: Option<String>) -> String {
     let mut handlebars = Handlebars::new();
     let svg_template = r##"<svg
     width="{{svg_width}}"
@@ -18,7 +18,7 @@ pub fn render_svg(meal: &Meal) -> String {
         </style>
     </defs>
     <g clip-path="url(#clip0_1_2)">
-        <rect width="{{svg_width}}" height="200" fill="white" />
+        <rect width="{{svg_width}}" height="200" fill="{{background_color}}" />
         <mask
             id="mask0_1_2"
             style="mask-type: alpha"
@@ -43,7 +43,7 @@ pub fn render_svg(meal: &Meal) -> String {
         x="12"
         y="50"
         font-size="36"
-        fill="black"
+        fill="{{text_color}}"
         clip-path="url(#title)"
         font-weight="bold"
     >
@@ -53,7 +53,7 @@ pub fn render_svg(meal: &Meal) -> String {
         x="12"
         y="76"
         font-size="16"
-        fill="black"
+        fill="{{text_color}}"
         clip-path="url(#description)"
     >
         {{meal_country}} / {{meal_category}}
@@ -85,7 +85,7 @@ pub fn render_svg(meal: &Meal) -> String {
             <stop offset="1" stop-opacity="0" />
         </linearGradient>
         <clipPath id="clip0_1_2">
-            <rect width="{{svg_width}}" height="200" fill="white" />
+            <rect width="{{svg_width}}" height="200" fill="{{background_color}}" />
         </clipPath>
         <image
             id="image0_1_2"
@@ -102,6 +102,18 @@ pub fn render_svg(meal: &Meal) -> String {
 
     let svg_width = std::cmp::max(meal.strMeal.len() * 17, 450);
     let image_x = svg_width - 200;
+    let text_color = match &theme {
+        Some(t) if t == "dark" => "#bbb",
+        Some(t) if t == "light" => "#080808",
+        None => "#bbb",
+        _ => "#bbb", // Default color if theme is not recognized
+    };
+    let background_color = match &theme {
+        Some(t) if t == "dark" => "#121212",
+        Some(t) if t == "light" => "#fff",
+        None => "#121212",
+        _ => "#121212", // Default color if theme is not recognized
+    };
     let data = {
         let mut m = std::collections::BTreeMap::new();
         m.insert("meal_name", meal.strMeal.clone());
@@ -110,6 +122,8 @@ pub fn render_svg(meal: &Meal) -> String {
         m.insert("meal_thumbnail", meal.strMealThumb.clone());
         m.insert("svg_width", svg_width.to_string());
         m.insert("image_x", image_x.to_string());
+        m.insert("text_color", text_color.to_string());
+        m.insert("background_color", background_color.to_string());
         m
     };
 

@@ -1,12 +1,18 @@
 mod fetcher;
 mod render;
 
-use actix_web::{get, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+pub struct SVGOption {
+    theme: Option<String>,
+}
 
 #[get("/")]
-async fn handle_request() -> impl Responder {
+async fn handle_request(query: web::Query<SVGOption>) -> impl Responder {
     let data = fetcher::fetch_random_food().await.unwrap();
-    let svg = render::render_svg(&data.meals[0]);
+    let svg = render::render_svg(&data.meals[0], query.theme.clone());
     HttpResponse::Ok().content_type("image/svg+xml").body(svg)
 }
 
