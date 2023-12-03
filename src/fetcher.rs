@@ -1,8 +1,8 @@
-use actix_web::HttpResponse;
 use reqwest::Error;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
+#[allow(non_snake_case)]
 pub struct Meal {
     pub idMeal: String,
     pub strMeal: String,
