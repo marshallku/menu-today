@@ -1,28 +1,19 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+mod fetcher;
+mod render;
+
+use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 
 #[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
-
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
-
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
+async fn handle_request() -> impl Responder {
+    let data = fetcher::fetch_random_food().await.unwrap();
+    let svg = render::render_svg(&data.meals[0]);
+    HttpResponse::Ok().content_type("image/svg+xml").body(svg)
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .service(hello)
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
-    })
-    .bind(("127.0.0.1", 41880))?
-    .run()
-    .await
+    HttpServer::new(|| App::new().service(handle_request))
+        .bind(("127.0.0.1", 41880))?
+        .run()
+        .await
 }
