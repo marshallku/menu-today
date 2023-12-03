@@ -1,0 +1,26 @@
+{
+    "words": [
+        "actix",
+        "autodocs",
+        "BUILDKIT",
+        "callout",
+        "codebases",
+        "codepoint",
+        "codepoints",
+        "hookform",
+        "localforage",
+        "marshallku",
+        "nextjs",
+        "preconfigured",
+        "preconfigures",
+        "Pretendard",
+        "Promiseable",
+        "reqwest",
+        "treeshake",
+        "tsup",
+        "Turborepo",
+        "vercel",
+        "xlink"
+    ],
+    "ignorePaths": ["Cargo.lock", "target"]
+}
