@@ -59,10 +59,10 @@ pub fn render_svg(meal: &Meal, theme: Option<String>) -> String {
         {{meal_country}} / {{meal_category}}
     </text>
     <clipPath id="title">
-        <rect x="12" y="12" width="340" height="60" fill="black" />
+        <rect x="12" y="12" width="{{text_width}}" height="60" fill="black" />
     </clipPath>
     <clipPath id="description">
-        <rect x="12" y="58" width="340" height="18" fill="black" />
+        <rect x="12" y="58" width="{{text_width}}" height="18" fill="black" />
     </clipPath>
     <defs>
         <pattern
@@ -70,15 +70,16 @@ pub fn render_svg(meal: &Meal, theme: Option<String>) -> String {
             patternContentUnits="objectBoundingBox"
             width="1"
             height="1"
+            x="{{image_x}}"
         >
-            <use xlink:href="#image0_1_2" transform="scale(0.00156495)" />
+            <use xlink:href="#image0_1_2" transform="scale(0.005)" />
         </pattern>
         <linearGradient
             id="paint0_linear_1_2"
-            x1="454"
-            y1="91.5"
-            x2="260.5"
-            y2="91.5"
+            x1="{{svg_width}}"
+            y1="100"
+            x2="{{image_x}}"
+            y2="100"
             gradientUnits="userSpaceOnUse"
         >
             <stop offset="0" />
@@ -89,8 +90,8 @@ pub fn render_svg(meal: &Meal, theme: Option<String>) -> String {
         </clipPath>
         <image
             id="image0_1_2"
-            width="639"
-            height="639"
+            width="200"
+            height="200"
             xlink:href="{{meal_thumbnail}}"
         />
     </defs>
@@ -100,8 +101,9 @@ pub fn render_svg(meal: &Meal, theme: Option<String>) -> String {
         .register_template_string("svg_template", svg_template)
         .unwrap();
 
-    let svg_width = std::cmp::max(meal.strMeal.len() * 17, 450);
+    let svg_width = std::cmp::max(meal.strMeal.len() * 17 + 150, 450);
     let image_x = svg_width - 200;
+    let text_width = svg_width - 110;
     let text_color = match &theme {
         Some(t) if t == "dark" => "#bbb",
         Some(t) if t == "light" => "#080808",
@@ -121,6 +123,7 @@ pub fn render_svg(meal: &Meal, theme: Option<String>) -> String {
         m.insert("meal_category", meal.strCategory.clone());
         m.insert("meal_thumbnail", meal.strMealThumb.clone());
         m.insert("svg_width", svg_width.to_string());
+        m.insert("text_width", text_width.to_string());
         m.insert("image_x", image_x.to_string());
         m.insert("text_color", text_color.to_string());
         m.insert("background_color", background_color.to_string());
