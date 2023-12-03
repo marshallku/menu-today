@@ -18,8 +18,10 @@ async fn handle_request(query: web::Query<SVGOption>) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().service(handle_request))
-        .bind(("127.0.0.1", 41880))?
-        .run()
-        .await
+    let server =
+        HttpServer::new(|| App::new().service(handle_request)).bind(("127.0.0.1", 41880))?;
+
+    println!("Server running at http://{}", server.addrs()[0]);
+
+    server.run().await
 }
