@@ -1,4 +1,5 @@
 mod fetcher;
+mod image;
 mod render;
 
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
@@ -12,7 +13,7 @@ pub struct SVGOption {
 #[get("/")]
 async fn handle_request(query: web::Query<SVGOption>) -> impl Responder {
     let data = fetcher::fetch_random_food().await.unwrap();
-    let svg = render::render_svg(&data.meals[0], query.theme.clone());
+    let svg = render::render_svg(&data.meals[0], query.theme.clone()).await;
     HttpResponse::Ok().content_type("image/svg+xml").body(svg)
 }
 

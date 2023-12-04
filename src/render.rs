@@ -1,7 +1,8 @@
 use crate::fetcher::Meal;
+use crate::image::get_image_data_url;
 use handlebars::Handlebars;
 
-pub fn render_svg(meal: &Meal, theme: Option<String>) -> String {
+pub async fn render_svg(meal: &Meal, theme: Option<String>) -> String {
     let mut handlebars = Handlebars::new();
     let svg_template = r##"<svg
     width="{{svg_width}}"
@@ -116,12 +117,13 @@ pub fn render_svg(meal: &Meal, theme: Option<String>) -> String {
         None => "#121212",
         _ => "#121212", // Default color if theme is not recognized
     };
+    let meal_thumbnail_data_url = get_image_data_url(&meal.strMealThumb).await.unwrap();
     let data = {
         let mut m = std::collections::BTreeMap::new();
         m.insert("meal_name", meal.strMeal.clone());
         m.insert("meal_country", meal.strArea.clone());
         m.insert("meal_category", meal.strCategory.clone());
-        m.insert("meal_thumbnail", meal.strMealThumb.clone());
+        m.insert("meal_thumbnail", meal_thumbnail_data_url);
         m.insert("svg_width", svg_width.to_string());
         m.insert("text_width", text_width.to_string());
         m.insert("image_x", image_x.to_string());
