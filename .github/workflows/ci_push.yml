@@ -1,0 +1,29 @@
+name: CI / Push
+
+on:
+    - push
+
+env:
+    CI: true
+
+jobs:
+    check-spelling:
+        name: Check spelling
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+                  check-latest: true
+                  registry-url: https://registry.npmjs.org/
+            - run: npx cspell --no-progress '**/*'
+    send-notification:
+        needs: [check-spelling]
+        if: ${{ failure() }}
+        uses: marshallku/menu-today/.github/workflows/send_notification.yml@master
+        with:
+            status: ${{ contains(join(needs.*.result, ','), 'failure') }}
+            message: "CI job failed - push"
+        secrets:
+            url: ${{ secrets.DISCORD_WEBHOOK_URI }}
