@@ -1,6 +1,7 @@
 {
     "words": [
         "actix",
+        "addrs",
         "autodocs",
         "BUILDKIT",
         "callout",
@@ -8,9 +9,11 @@
         "codepoint",
         "codepoints",
         "hookform",
+        "libressl",
         "localforage",
         "marshallku",
         "nextjs",
+        "pkgconfig",
         "preconfigured",
         "preconfigures",
         "Pretendard",
@@ -22,5 +25,5 @@
         "vercel",
         "xlink"
     ],
-    "ignorePaths": ["Cargo.lock", "target"]
+    "ignorePaths": ["Cargo.lock", "Cargo.toml", "target"]
 }
