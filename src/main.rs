@@ -14,7 +14,12 @@ pub struct SVGOption {
 async fn handle_request(query: web::Query<SVGOption>) -> impl Responder {
     let data = fetcher::fetch_random_food().await.unwrap();
     let svg = render::render_svg(&data.meals[0], query.theme.clone()).await;
-    HttpResponse::Ok().content_type("image/svg+xml").body(svg)
+    HttpResponse::Ok()
+        .content_type("image/svg+xml")
+        .append_header(("Cache-Control", "no-cache"))
+        .append_header(("Pragma", "no-cache"))
+        .append_header(("Expires", "0"))
+        .body(svg)
 }
 
 #[actix_web::main]
