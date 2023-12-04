@@ -18,8 +18,20 @@ jobs:
                   check-latest: true
                   registry-url: https://registry.npmjs.org/
             - run: npx cspell --no-progress '**/*'
+    build:
+        name: Build project
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+            - uses: actions-rs/cargo@v1
+              with:
+                  command: build
+                  args: --release --all-features
     send-notification:
-        needs: [check-spelling]
+        needs: [check-spelling, build]
         if: ${{ failure() }}
         uses: marshallku/menu-today/.github/workflows/send_notification.yml@master
         with:
