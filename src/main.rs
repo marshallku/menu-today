@@ -4,6 +4,7 @@ mod render;
 
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 use serde::Deserialize;
+use std::time::Instant;
 
 #[derive(Deserialize)]
 pub struct SVGOption {
@@ -12,8 +13,16 @@ pub struct SVGOption {
 
 #[get("/")]
 async fn handle_request(query: web::Query<SVGOption>) -> impl Responder {
+    let start_time = Instant::now();
+
     let data = fetcher::fetch_random_food().await.unwrap();
     let svg = render::render_svg(&data.meals[0], query.theme.clone()).await;
+
+    println!(
+        "Time taken for generating image: {:?}",
+        start_time.elapsed()
+    );
+
     HttpResponse::Ok()
         .content_type("image/svg+xml")
         .append_header(("Cache-Control", "no-cache"))
