@@ -14,8 +14,8 @@ pub async fn render_svg(meal: &Meal, theme: Option<String>) -> String {
 >
     <defs>
         <style>
-            @import url("https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700");
-            text { stroke: none; font-family: "Cabin Sketch", cursive; }
+            text { stroke: none; font-family: -apple-system, BlinkMacSystemFont,
+                'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', arial, sans-serif }
         </style>
     </defs>
     <g clip-path="url(#clip0_1_2)">
