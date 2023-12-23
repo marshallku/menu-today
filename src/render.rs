@@ -124,19 +124,21 @@ pub fn render_svg(
         Some(t) if t == "light" => "#fff",
         _ => "#121212",
     };
-    let data = {
-        let mut m = std::collections::BTreeMap::new();
-        m.insert("meal_name", meal.strMeal.to_string());
-        m.insert("meal_country", meal.strArea.to_string());
-        m.insert("meal_category", meal.strCategory.to_string());
-        m.insert("meal_thumbnail", meal.strMealThumb.to_string());
-        m.insert("svg_width", svg_width.to_string());
-        m.insert("text_width", text_width.to_string());
-        m.insert("image_x", image_x.to_string());
-        m.insert("text_color", text_color.to_string());
-        m.insert("background_color", background_color.to_string());
-        m
-    };
+
+    let data = [
+        ("meal_name", meal.strMeal.to_string()),
+        ("meal_country", meal.strArea.to_string()),
+        ("meal_category", meal.strCategory.to_string()),
+        ("meal_thumbnail", meal.strMealThumb.to_string()),
+        ("svg_width", svg_width.to_string()),
+        ("text_width", text_width.to_string()),
+        ("image_x", image_x.to_string()),
+        ("text_color", text_color.to_string()),
+        ("background_color", background_color.to_string()),
+    ]
+    .iter()
+    .cloned()
+    .collect::<std::collections::BTreeMap<_, _>>();
 
     handlebars.render("svg_template", &data).unwrap()
 }
