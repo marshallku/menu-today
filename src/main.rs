@@ -1,5 +1,4 @@
 mod fetcher;
-mod image;
 mod render;
 
 use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};

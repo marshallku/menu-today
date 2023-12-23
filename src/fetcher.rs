@@ -1,4 +1,6 @@
-use reqwest::Error;
+use base64::{engine::general_purpose, Engine as _};
+use mime_guess::from_path;
+use reqwest::{get, Error};
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
@@ -65,9 +67,17 @@ pub struct ResponseData {
 }
 
 pub async fn fetch_random_food() -> Result<ResponseData, Error> {
-    let response = reqwest::get("https://www.themealdb.com/api/json/v1/1/random.php")
+    let mut response = get("https://www.themealdb.com/api/json/v1/1/random.php")
         .await?
         .json::<ResponseData>()
         .await?;
+    let image_url = response.meals[0].strMealThumb.to_string();
+    let image_response = get(&image_url).await?;
+    let bytes = image_response.bytes().await?;
+    let mime = from_path(&image_url).first_or_octet_stream().to_string();
+    let encoded: String = general_purpose::STANDARD_NO_PAD.encode(&bytes);
+
+    response.meals[0].strMealThumb = format!("data:{};base64,{}", mime, encoded);
+
     Ok(response)
 }
