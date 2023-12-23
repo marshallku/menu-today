@@ -117,13 +117,11 @@ pub async fn render_svg(
     let text_color = match &theme {
         Some(t) if t == "dark" => "#bbb",
         Some(t) if t == "light" => "#080808",
-        None => "#bbb",
         _ => "#bbb",
     };
     let background_color = match &theme {
         Some(t) if t == "dark" => "#121212",
         Some(t) if t == "light" => "#fff",
-        None => "#121212",
         _ => "#121212",
     };
     let data = {
