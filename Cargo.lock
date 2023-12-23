@@ -1005,7 +1005,6 @@ dependencies = [
  "mime_guess",
  "reqwest",
  "serde",
- "tokio",
 ]
 
 [[package]]

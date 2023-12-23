@@ -1,7 +1,6 @@
-use actix_web::web::Data;
+use actix_web::{rt::spawn, web::Data};
 use reqwest::Error;
 use std::sync::Mutex;
-use tokio::task;
 
 use crate::fetcher::{fetch_random_food, ResponseData};
 
@@ -14,7 +13,7 @@ pub async fn fetch_and_cache(state: Data<AppState>) -> Result<ResponseData, Erro
     if let Some(data) = cache.as_ref() {
         let cached_data = data.clone();
         drop(cache);
-        task::spawn(async move {
+        spawn(async move {
             match fetch_random_food().await {
                 Ok(new_data) => {
                     let mut cache = state.cache.lock().unwrap();
