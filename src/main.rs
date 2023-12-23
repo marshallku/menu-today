@@ -4,11 +4,17 @@ mod render;
 
 use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
 use env_logger::Env;
+use fetcher::ResponseData;
 use serde::Deserialize;
 use std::{
     sync::{atomic::AtomicBool, Mutex},
     time::Instant,
 };
+
+pub struct AppState {
+    pub cache: Mutex<ResponseData>,
+    pub in_progress: AtomicBool,
+}
 
 #[derive(Deserialize)]
 pub struct SVGOption {
@@ -16,10 +22,7 @@ pub struct SVGOption {
 }
 
 #[get("/")]
-async fn handle_request(
-    query: web::Query<SVGOption>,
-    data: web::Data<cache::AppState>,
-) -> impl Responder {
+async fn handle_request(query: web::Query<SVGOption>, data: web::Data<AppState>) -> impl Responder {
     let start_time = Instant::now();
 
     let data = cache::fetch_and_cache(data).await.unwrap();
@@ -43,7 +46,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     let initial_data = fetcher::fetch_random_food().await.unwrap();
-    let data = web::Data::new(cache::AppState {
+    let data = web::Data::new(AppState {
         cache: Mutex::new(initial_data),
         in_progress: AtomicBool::new(false),
     });

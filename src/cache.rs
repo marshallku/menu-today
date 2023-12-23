@@ -1,16 +1,11 @@
 use actix_web::{rt::spawn, web::Data};
 use reqwest::Error;
-use std::sync::{
-    atomic::{AtomicBool, Ordering},
-    Mutex,
+use std::sync::atomic::Ordering;
+
+use crate::{
+    fetcher::{fetch_random_food, ResponseData},
+    AppState,
 };
-
-use crate::fetcher::{fetch_random_food, ResponseData};
-
-pub struct AppState {
-    pub cache: Mutex<ResponseData>,
-    pub in_progress: AtomicBool,
-}
 
 pub async fn fetch_and_cache(state: Data<AppState>) -> Result<ResponseData, Error> {
     let cache = state.cache.lock().unwrap();
