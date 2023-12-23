@@ -7,13 +7,14 @@ use env_logger::Env;
 use fetcher::ResponseData;
 use serde::Deserialize;
 use std::{
-    sync::{atomic::AtomicBool, Mutex},
+    sync::{atomic::AtomicBool, Arc, Mutex},
     time::Instant,
 };
 
 pub struct AppState {
     pub cache: Mutex<ResponseData>,
     pub in_progress: AtomicBool,
+    pub handlebars: Arc<handlebars::Handlebars<'static>>,
 }
 
 #[derive(Deserialize)]
@@ -22,11 +23,14 @@ pub struct SVGOption {
 }
 
 #[get("/")]
-async fn handle_request(query: web::Query<SVGOption>, data: web::Data<AppState>) -> impl Responder {
+async fn handle_request(
+    query: web::Query<SVGOption>,
+    state: web::Data<AppState>,
+) -> impl Responder {
     let start_time = Instant::now();
-
-    let data = cache::fetch_and_cache(data).await.unwrap();
-    let svg = render::render_svg(&data.meals[0], query.theme.clone()).await;
+    let handlebars = state.handlebars.clone();
+    let data = cache::fetch_and_cache(state).await.unwrap();
+    let svg = render::render_svg(handlebars, &data.meals[0], query.theme.clone()).await;
 
     println!(
         "Time taken for generating image: {:?}",
@@ -46,9 +50,11 @@ async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     let initial_data = fetcher::fetch_random_food().await.unwrap();
+    let handlebars = render::create_handlebars();
     let data = web::Data::new(AppState {
         cache: Mutex::new(initial_data),
         in_progress: AtomicBool::new(false),
+        handlebars,
     });
     let bind_address = std::env::var("BIND_ADDRESS").unwrap_or_else(|_| String::from("127.0.0.1"));
     let server = HttpServer::new(move || {

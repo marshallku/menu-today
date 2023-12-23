@@ -1,7 +1,9 @@
-use crate::fetcher::Meal;
 use handlebars::Handlebars;
+use std::sync::Arc;
 
-pub async fn render_svg(meal: &Meal, theme: Option<String>) -> String {
+use crate::fetcher::Meal;
+
+pub fn create_handlebars() -> Arc<Handlebars<'static>> {
     let mut handlebars = Handlebars::new();
     let svg_template = r##"<svg
     width="{{svg_width}}"
@@ -101,6 +103,14 @@ pub async fn render_svg(meal: &Meal, theme: Option<String>) -> String {
         .register_template_string("svg_template", svg_template)
         .unwrap();
 
+    Arc::new(handlebars)
+}
+
+pub async fn render_svg(
+    handlebars: Arc<Handlebars<'static>>,
+    meal: &Meal,
+    theme: Option<String>,
+) -> String {
     let svg_width = std::cmp::max(meal.strMeal.len() * 17 + 150, 450);
     let image_x = svg_width - 200;
     let text_width = svg_width - 110;
