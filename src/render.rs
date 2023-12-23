@@ -1,5 +1,5 @@
 use handlebars::Handlebars;
-use std::sync::Arc;
+use std::{cmp::max, collections::BTreeMap, sync::Arc};
 
 use crate::fetcher::Meal;
 
@@ -111,9 +111,9 @@ pub fn render_svg(
     meal: &Meal,
     theme: Option<String>,
 ) -> String {
-    let svg_width = std::cmp::max(meal.strMeal.len() * 17 + 150, 450);
+    let svg_width = max(meal.strMeal.len() * 17 + 180, 450);
     let image_x = svg_width - 200;
-    let text_width = svg_width - 110;
+    let text_width = svg_width - 100;
     let text_color = match &theme {
         Some(t) if t == "dark" => "#bbb",
         Some(t) if t == "light" => "#080808",
@@ -138,7 +138,7 @@ pub fn render_svg(
     ]
     .iter()
     .cloned()
-    .collect::<std::collections::BTreeMap<_, _>>();
+    .collect::<BTreeMap<_, _>>();
 
     handlebars.render("svg_template", &data).unwrap()
 }
