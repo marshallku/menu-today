@@ -11,6 +11,7 @@
         "hookform",
         "libressl",
         "localforage",
+        "Malgun",
         "marshallku",
         "nextjs",
         "pkgconfig",
@@ -25,5 +26,9 @@
         "vercel",
         "xlink"
     ],
-    "ignorePaths": ["Cargo.lock", "Cargo.toml", "target"]
+    "ignorePaths": [
+        "Cargo.lock",
+        "Cargo.toml",
+        "target"
+    ]
 }
