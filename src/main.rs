@@ -30,7 +30,7 @@ async fn handle_request(
     let start_time = Instant::now();
     let handlebars = state.handlebars.clone();
     let data = cache::fetch_and_cache(state).await.unwrap();
-    let svg = render::render_svg(handlebars, &data.meals[0], query.theme.clone()).await;
+    let svg = render::render_svg(handlebars, &data.meals[0], query.theme.clone());
 
     println!(
         "Time taken for generating image: {:?}",

@@ -106,7 +106,7 @@ pub fn create_handlebars() -> Arc<Handlebars<'static>> {
     Arc::new(handlebars)
 }
 
-pub async fn render_svg(
+pub fn render_svg(
     handlebars: Arc<Handlebars<'static>>,
     meal: &Meal,
     theme: Option<String>,
