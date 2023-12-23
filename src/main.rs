@@ -5,7 +5,10 @@ mod render;
 use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
 use env_logger::Env;
 use serde::Deserialize;
-use std::{sync::Mutex, time::Instant};
+use std::{
+    sync::{atomic::AtomicBool, Mutex},
+    time::Instant,
+};
 
 #[derive(Deserialize)]
 pub struct SVGOption {
@@ -41,6 +44,7 @@ async fn main() -> std::io::Result<()> {
 
     let data = web::Data::new(cache::AppState {
         cache: Mutex::new(None),
+        in_progress: AtomicBool::new(false),
     });
     let bind_address = std::env::var("BIND_ADDRESS").unwrap_or_else(|_| String::from("127.0.0.1"));
     let server = HttpServer::new(move || {
