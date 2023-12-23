@@ -3,7 +3,7 @@ use mime_guess::from_path;
 use reqwest::{get, Error};
 use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 #[allow(non_snake_case)]
 pub struct Meal {
     pub idMeal: String,
@@ -61,7 +61,7 @@ pub struct Meal {
     pub dateModified: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct ResponseData {
     pub meals: Vec<Meal>,
 }
