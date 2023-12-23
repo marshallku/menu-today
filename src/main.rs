@@ -42,8 +42,9 @@ async fn handle_request(
 async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
+    let initial_data = fetcher::fetch_random_food().await.unwrap();
     let data = web::Data::new(cache::AppState {
-        cache: Mutex::new(None),
+        cache: Mutex::new(initial_data),
         in_progress: AtomicBool::new(false),
     });
     let bind_address = std::env::var("BIND_ADDRESS").unwrap_or_else(|_| String::from("127.0.0.1"));
