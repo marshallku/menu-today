@@ -1002,6 +1002,7 @@ dependencies = [
  "env_logger",
  "handlebars",
  "image",
+ "log",
  "mime_guess",
  "reqwest",
  "serde",

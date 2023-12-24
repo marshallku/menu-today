@@ -5,6 +5,7 @@ mod render;
 use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
 use env_logger::Env;
 use fetcher::ResponseData;
+use log::info;
 use serde::Deserialize;
 use std::{
     sync::{atomic::AtomicBool, Arc, Mutex},
@@ -29,13 +30,11 @@ async fn handle_request(
 ) -> impl Responder {
     let start_time = Instant::now();
     let handlebars = state.handlebars.clone();
+    info!("Clone handlebars: {:?}", start_time.elapsed());
     let data = cache::fetch_and_cache(state).await.unwrap();
+    info!("Fetch and cache data: {:?}", start_time.elapsed());
     let svg = render::render_svg(handlebars, &data.meals[0], query.theme.clone());
-
-    println!(
-        "Time taken for generating image: {:?}",
-        start_time.elapsed()
-    );
+    info!("Create svg image: {:?}", start_time.elapsed());
 
     HttpResponse::Ok()
         .content_type("image/svg+xml")
@@ -65,7 +64,7 @@ async fn main() -> std::io::Result<()> {
     })
     .bind((bind_address.as_str(), 41880))?;
 
-    println!("Server running at http://{}", server.addrs()[0]);
+    info!("Server running at http://{:?}", server.addrs()[0]);
 
     server.run().await
 }
