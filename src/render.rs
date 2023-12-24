@@ -114,15 +114,10 @@ pub fn render_svg(
     let svg_width = max(meal.strMeal.len() * 17 + 180, 450);
     let image_x = svg_width - 200;
     let text_width = svg_width - 100;
-    let text_color = match &theme {
-        Some(t) if t == "dark" => "#bbb",
-        Some(t) if t == "light" => "#080808",
-        _ => "#bbb",
-    };
-    let background_color = match &theme {
-        Some(t) if t == "dark" => "#121212",
-        Some(t) if t == "light" => "#fff",
-        _ => "#121212",
+    let (text_color, background_color) = match &theme {
+        Some(t) if t == "dark" => ("#bbb", "#121212"),
+        Some(t) if t == "light" => ("#080808", "#fff"),
+        _ => ("#bbb", "#121212"),
     };
 
     let data = [
