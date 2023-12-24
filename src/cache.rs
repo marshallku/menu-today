@@ -14,8 +14,8 @@ pub async fn fetch_and_cache(state: Data<AppState>) -> Result<ResponseData, Erro
     drop(cache);
 
     // Only spawn a new fetch if one isn't already in progress
-    if !state.in_progress.load(Ordering::SeqCst) {
-        state.in_progress.store(true, Ordering::SeqCst);
+    if !state.fetch_in_progress.load(Ordering::SeqCst) {
+        state.fetch_in_progress.store(true, Ordering::SeqCst);
         // Should the response contain cached data, ensure to fetch the data in preparation for the next request
         spawn(async move {
             match fetch_random_food().await {
@@ -27,7 +27,7 @@ pub async fn fetch_and_cache(state: Data<AppState>) -> Result<ResponseData, Erro
                     eprintln!("Error fetching data: {:?}", e);
                 }
             }
-            state.in_progress.store(false, Ordering::SeqCst);
+            state.fetch_in_progress.store(false, Ordering::SeqCst);
         });
     }
 

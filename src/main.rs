@@ -13,7 +13,7 @@ use std::{
 
 pub struct AppState {
     pub cache: Mutex<ResponseData>,
-    pub in_progress: AtomicBool,
+    pub fetch_in_progress: AtomicBool,
     pub handlebars: Arc<handlebars::Handlebars<'static>>,
 }
 
@@ -53,7 +53,7 @@ async fn main() -> std::io::Result<()> {
     let handlebars = render::create_handlebars();
     let data = web::Data::new(AppState {
         cache: Mutex::new(initial_data),
-        in_progress: AtomicBool::new(false),
+        fetch_in_progress: AtomicBool::new(false),
         handlebars,
     });
     let bind_address = std::env::var("BIND_ADDRESS").unwrap_or_else(|_| String::from("127.0.0.1"));
