@@ -1,5 +1,5 @@
 use handlebars::Handlebars;
-use std::{cmp::max, collections::BTreeMap, sync::Arc};
+use std::{cmp::max, collections::HashMap, sync::Arc};
 
 use crate::fetcher::Meal;
 
@@ -133,7 +133,7 @@ pub fn render_svg(
     ]
     .iter()
     .cloned()
-    .collect::<BTreeMap<_, _>>();
+    .collect::<HashMap<_, _>>();
 
     handlebars.render("svg_template", &data).unwrap()
 }
