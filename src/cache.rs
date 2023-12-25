@@ -1,13 +1,14 @@
-use actix_web::{rt::spawn, web::Data};
+use axum::extract::State;
 use reqwest::Error;
 use std::sync::atomic::Ordering;
+use tokio::spawn;
 
 use crate::{
     fetcher::{fetch_random_food, ResponseData},
     AppState,
 };
 
-pub async fn fetch_and_cache(state: Data<AppState>) -> Result<ResponseData, Error> {
+pub async fn fetch_and_cache(State(state): State<AppState>) -> Result<ResponseData, Error> {
     let cache = state.cache.lock().unwrap();
     let cached_data = cache.clone();
 
