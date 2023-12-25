@@ -3,6 +3,10 @@ use std::{cmp::max, collections::HashMap, sync::Arc};
 
 use crate::fetcher::Meal;
 
+const SVG_WIDTH: usize = 450;
+const IMAGE_WIDTH: usize = 200;
+const TEXT_RIGHT_GUTTER: usize = 100;
+
 pub fn create_handlebars() -> Arc<Handlebars<'static>> {
     let mut handlebars = Handlebars::new();
     let svg_template = r##"<svg
@@ -111,9 +115,11 @@ pub fn render_svg(
     meal: &Meal,
     theme: Option<String>,
 ) -> String {
-    let svg_width = max(meal.strMeal.len() * 17 + 180, 450);
-    let image_x = svg_width - 200;
-    let text_width = svg_width - 100;
+    // The SVG is 450px wide, but we want to make sure the text is always visible
+    // The character is 17px wide on most fonts
+    let svg_width = max(meal.strMeal.len() * 17 + (IMAGE_WIDTH - 20), SVG_WIDTH);
+    let image_x = svg_width - IMAGE_WIDTH;
+    let text_width = svg_width - TEXT_RIGHT_GUTTER;
     let (text_color, background_color) = match &theme {
         Some(t) if t == "dark" => ("#bbb", "#121212"),
         Some(t) if t == "light" => ("#080808", "#fff"),
