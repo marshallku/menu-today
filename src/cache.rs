@@ -1,4 +1,5 @@
 use axum::extract::State;
+use log::error;
 use reqwest::Error;
 use std::sync::atomic::Ordering;
 use tokio::spawn;
@@ -25,7 +26,7 @@ pub async fn fetch_and_cache(State(state): State<AppState>) -> Result<ResponseDa
                     *cache = new_data;
                 }
                 Err(e) => {
-                    eprintln!("Error fetching data: {:?}", e);
+                    error!("Error fetching data: {:?}", e);
                 }
             }
             state.fetch_in_progress.store(false, Ordering::SeqCst);
