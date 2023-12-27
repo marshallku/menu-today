@@ -1,7 +1,7 @@
-use base64::{engine::general_purpose, Engine as _};
-use mime_guess::from_path;
 use reqwest::{get, Error};
 use serde::Deserialize;
+
+use crate::encode::encode_image_from_url;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct MealData {
@@ -21,17 +21,14 @@ pub struct ResponseData {
 }
 
 pub async fn fetch_random_food() -> Result<MealData, Error> {
-    let mut response = get("https://www.themealdb.com/api/json/v1/1/random.php")
+    let response = get("https://www.themealdb.com/api/json/v1/1/random.php")
         .await?
         .json::<ResponseData>()
         .await?;
-    let image_url = response.meals[0].meal_thumbnail.to_string();
-    let image_response = get(&image_url).await?;
-    let bytes = image_response.bytes().await?;
-    let mime = from_path(&image_url).first_or_octet_stream().to_string();
-    let encoded: String = general_purpose::STANDARD_NO_PAD.encode(&bytes);
+    let mut meal = response.meals.into_iter().next().unwrap();
+    let encoded_thumbnail = encode_image_from_url(&meal.meal_thumbnail).await?;
 
-    response.meals[0].meal_thumbnail = format!("data:{};base64,{}", mime, encoded);
+    meal.meal_thumbnail = encoded_thumbnail;
 
-    Ok(response.meals[0].clone())
+    Ok(meal)
 }

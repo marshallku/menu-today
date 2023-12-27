@@ -1,4 +1,5 @@
 mod cache;
+mod encode;
 mod fetcher;
 mod render;
 
