@@ -38,7 +38,9 @@ async fn handle_request(
     let start_time = Instant::now();
     let handlebars = state.handlebars.clone();
     info!("Clone handlebars: {:?}", start_time.elapsed());
-    let data = cache::fetch_and_cache(State(state)).await.unwrap();
+    let data = cache::fetch_and_cache(fetcher::fetch_random_food, State(state))
+        .await
+        .unwrap();
     info!("Fetch and cache data: {:?}", start_time.elapsed());
     let svg = render::render_svg(handlebars, &data, query.theme.clone());
     info!("Create svg image: {:?}", start_time.elapsed());
