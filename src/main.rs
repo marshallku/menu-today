@@ -10,7 +10,6 @@ use axum::{
     Router,
 };
 use env_logger::Env;
-use fetcher::ResponseData;
 use log::info;
 use serde::Deserialize;
 use std::{
@@ -21,7 +20,7 @@ use std::{
 
 #[derive(Clone)]
 pub struct AppState {
-    pub cache: Arc<Mutex<ResponseData>>,
+    pub cache: Arc<Mutex<fetcher::MealData>>,
     pub fetch_in_progress: Arc<AtomicBool>,
     pub handlebars: Arc<handlebars::Handlebars<'static>>,
 }
@@ -40,7 +39,7 @@ async fn handle_request(
     info!("Clone handlebars: {:?}", start_time.elapsed());
     let data = cache::fetch_and_cache(State(state)).await.unwrap();
     info!("Fetch and cache data: {:?}", start_time.elapsed());
-    let svg = render::render_svg(handlebars, &data.meals[0], query.theme.clone());
+    let svg = render::render_svg(handlebars, &data, query.theme.clone());
     info!("Create svg image: {:?}", start_time.elapsed());
 
     let mut headers = HeaderMap::new();

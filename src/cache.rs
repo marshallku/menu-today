@@ -5,11 +5,11 @@ use std::sync::atomic::Ordering;
 use tokio::spawn;
 
 use crate::{
-    fetcher::{fetch_random_food, ResponseData},
+    fetcher::{fetch_random_food, MealData},
     AppState,
 };
 
-pub async fn fetch_and_cache(State(state): State<AppState>) -> Result<ResponseData, Error> {
+pub async fn fetch_and_cache(State(state): State<AppState>) -> Result<MealData, Error> {
     let cache = state.cache.lock().unwrap();
     let cached_data = cache.clone();
 
