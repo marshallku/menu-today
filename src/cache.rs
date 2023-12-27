@@ -16,9 +16,12 @@ pub async fn fetch_and_cache(State(state): State<AppState>) -> Result<ResponseDa
     drop(cache);
 
     // Only spawn a new fetch if one isn't already in progress
-    if !state.fetch_in_progress.load(Ordering::SeqCst) {
-        state.fetch_in_progress.store(true, Ordering::SeqCst);
-        // Should the response contain cached data, ensure to fetch the data in preparation for the next request
+    let fetch_in_progress =
+        state
+            .fetch_in_progress
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst);
+
+    if fetch_in_progress.is_ok() {
         spawn(async move {
             match fetch_random_food().await {
                 Ok(new_data) => {
