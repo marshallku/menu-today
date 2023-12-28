@@ -37,7 +37,6 @@ async fn handle_request(
 ) -> impl IntoResponse {
     let start_time = Instant::now();
     let handlebars = state.handlebars.clone();
-    info!("Clone handlebars: {:?}", start_time.elapsed());
 
     let mut headers = HeaderMap::new();
 
@@ -49,7 +48,6 @@ async fn handle_request(
 
     match cache::fetch_and_cache(fetcher::fetch_random_food, State(state)).await {
         Ok(data) => {
-            info!("Fetch and cache data: {:?}", start_time.elapsed());
             let svg = render::render_svg(handlebars, &data, query.theme.clone());
             info!("Create svg image: {:?}", start_time.elapsed());
 
