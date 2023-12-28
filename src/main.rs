@@ -11,7 +11,7 @@ use axum::{
     Router,
 };
 use env_logger::Env;
-use log::info;
+use log::{error, info};
 use serde::Deserialize;
 use std::{
     env,
@@ -38,21 +38,37 @@ async fn handle_request(
     let start_time = Instant::now();
     let handlebars = state.handlebars.clone();
     info!("Clone handlebars: {:?}", start_time.elapsed());
-    let data = cache::fetch_and_cache(fetcher::fetch_random_food, State(state))
-        .await
-        .unwrap();
-    info!("Fetch and cache data: {:?}", start_time.elapsed());
-    let svg = render::render_svg(handlebars, &data, query.theme.clone());
-    info!("Create svg image: {:?}", start_time.elapsed());
 
     let mut headers = HeaderMap::new();
 
+    headers.insert("Content-Type", "image/svg+xml".parse().unwrap());
     headers.insert("Content-Type", "image/svg+xml".parse().unwrap());
     headers.insert("Cache-Control", "no-cache".parse().unwrap());
     headers.insert("Pragma", "no-cache".parse().unwrap());
     headers.insert("Expires", "0".parse().unwrap());
 
-    (StatusCode::OK, headers, svg)
+    match cache::fetch_and_cache(fetcher::fetch_random_food, State(state)).await {
+        Ok(data) => {
+            info!("Fetch and cache data: {:?}", start_time.elapsed());
+            let svg = render::render_svg(handlebars, &data, query.theme.clone());
+            info!("Create svg image: {:?}", start_time.elapsed());
+
+            (StatusCode::OK, headers, svg)
+        }
+        Err(e) => {
+            error!("Error fetching data: {:?}", e);
+
+            let data = fetcher::MealData {
+                meal_name: "Error".to_string(),
+                meal_country: "500".to_string(),
+                meal_category: "Internal Server Error".to_string(),
+                meal_thumbnail: "".to_string(),
+            };
+            let svg = render::render_svg(handlebars, &data, query.theme.clone());
+
+            (StatusCode::OK, headers, svg)
+        }
+    }
 }
 
 #[tokio::main]
