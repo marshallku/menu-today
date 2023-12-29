@@ -19,6 +19,7 @@
         "preconfigures",
         "Pretendard",
         "Promiseable",
+        "referer",
         "reqwest",
         "treeshake",
         "tsup",

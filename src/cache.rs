@@ -1,8 +1,8 @@
 use axum::extract::State;
-use log::error;
 use reqwest::Error;
 use std::sync::atomic::Ordering;
 use tokio::spawn;
+use tracing::error;
 
 use crate::{fetcher::MealData, AppState};
 
