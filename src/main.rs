@@ -41,7 +41,6 @@ async fn handle_request(
     let mut headers = HeaderMap::new();
 
     headers.insert("Content-Type", "image/svg+xml".parse().unwrap());
-    headers.insert("Content-Type", "image/svg+xml".parse().unwrap());
     headers.insert("Cache-Control", "no-cache".parse().unwrap());
     headers.insert("Pragma", "no-cache".parse().unwrap());
     headers.insert("Expires", "0".parse().unwrap());
@@ -82,7 +81,6 @@ async fn main() {
     };
 
     let app = Router::new()
-        // `GET /` goes to `root`
         .route("/", get(handle_request))
         .with_state(data);
 

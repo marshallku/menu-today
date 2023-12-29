@@ -40,7 +40,7 @@ where
         });
     }
 
-    return Ok(cached_data);
+    Ok(cached_data)
 }
 
 #[cfg(test)]
