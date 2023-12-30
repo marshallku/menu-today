@@ -56,12 +56,7 @@ async fn handle_request(
         Err(e) => {
             error!("Error fetching data: {:?}", e);
 
-            let data = fetcher::MealData {
-                meal_name: "Error".to_string(),
-                meal_country: "500".to_string(),
-                meal_category: "Internal Server Error".to_string(),
-                meal_thumbnail: "".to_string(),
-            };
+            let data = fetcher::get_default_meal();
             let svg = render::render_svg(handlebars, &data, query.theme.clone());
 
             (StatusCode::OK, headers, svg)
