@@ -31,7 +31,7 @@ pub fn get_default_meal() -> MealData {
 }
 
 pub async fn fetch_random_food() -> Result<MealData, Error> {
-    match get("https://www.themealdb.com/api/json/v1/1/random.php").await {
+    match get("https://www.themealdb.com/api/json/v2/1/random.php").await {
         Ok(response) => match response.json::<ResponseData>().await {
             Ok(data) => {
                 let mut meal = data.meals.into_iter().next().unwrap();
