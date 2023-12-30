@@ -1,10 +1,15 @@
-# Today's menu to image
+# Random Meal SVG Generator
 
-![Screenshot of menu - Hot and Sour Soup](https://cdn.discordapp.com/attachments/1102888096007196733/1180843590608486450/localhost_41880__1.png)
+![Screenshot of generated meal svg](https://media.discordapp.net/attachments/1102888096007196733/1190657177820602438/marshallku.dev_48018_.png)
 
-Display a random menu using SVG in Rust
+The Random Meal SVG Generator is a web application built with Rust and Axum framework. It fetches random meal data from an external API and renders this data as an SVG image.
 
-## Requirements
+## Prerequisites
+
+- Rust
+- Docker
+
+### Additional packages
 
 ```bash
 sudo apt install pkg-config libssl-dev
@@ -12,7 +17,17 @@ sudo apt install pkg-config libssl-dev
 
 In order to run the application using `cargo run`, the `reqwest` library requires the `pkg-config` and `libssl-dev` packages to be installed
 
-## Docker
+## Run the application
+
+### With Cargo
+
+```bash
+cargo run
+```
+
+You can run the application directly using Cargo.
+
+### With Docker
 
 ```bash
 docker build -t menu-today .
@@ -20,3 +35,21 @@ docker run -e BIND_ADDRESS=0.0.0.0 -p 41880:41880 --restart=unless-stopped -d me
 ```
 
 Alternatively, this application can be effortlessly executed using Docker.
+
+### Usage
+
+```txt
+http://127.0.0.1:41880/
+```
+
+Access the application via a web browser or any HTTP client at the address where the server is running. For example, if running locally on the default port(41880).
+
+### Testing
+
+To run the unit tests:
+
+```bash
+cargo test
+```
+
+This will execute the tests defined in the application, ensuring all components function as expected.
