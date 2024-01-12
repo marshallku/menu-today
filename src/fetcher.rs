@@ -31,24 +31,24 @@ pub fn get_default_meal() -> MealData {
 }
 
 pub async fn fetch_random_food() -> Result<MealData, Error> {
-    match get("https://www.themealdb.com/api/json/v2/1/random.php").await {
-        Ok(response) => match response.json::<ResponseData>().await {
-            Ok(data) => {
-                let mut meal = data.meals.into_iter().next().unwrap();
-                let encoded_thumbnail = encode_image_from_url(&meal.meal_thumbnail).await.unwrap();
-
-                meal.meal_thumbnail = encoded_thumbnail;
-
-                Ok(meal)
-            }
-            Err(e) => {
-                error!("Error parsing data: {:?}", e);
-                Ok(get_default_meal())
-            }
-        },
+    let response = match get("https://www.themealdb.com/api/json/v2/1/random.php").await {
+        Ok(response) => response,
         Err(e) => {
             error!("Error fetching data: {:?}", e);
-            Ok(get_default_meal())
+            return Ok(get_default_meal());
         }
-    }
+    };
+    let data = match response.json::<ResponseData>().await {
+        Ok(data) => data,
+        Err(e) => {
+            error!("Error parsing data: {:?}", e);
+            return Ok(get_default_meal());
+        }
+    };
+    let mut meal = data.meals.into_iter().next().unwrap();
+    let encoded_thumbnail = encode_image_from_url(&meal.meal_thumbnail).await.unwrap();
+
+    meal.meal_thumbnail = encoded_thumbnail;
+
+    Ok(meal)
 }
