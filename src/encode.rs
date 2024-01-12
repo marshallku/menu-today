@@ -3,7 +3,13 @@ use mime_guess::from_path;
 use reqwest::get;
 use tracing::error;
 
+use crate::url::is_valid_url;
+
 pub async fn encode_image_from_url(url: &str) -> Result<String, String> {
+    if !is_valid_url(url) {
+        return Ok("".to_string());
+    }
+
     match get(url).await {
         Ok(response) => match response.bytes().await {
             Ok(bytes) => {
