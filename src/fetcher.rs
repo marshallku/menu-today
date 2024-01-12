@@ -45,7 +45,13 @@ pub async fn fetch_random_food() -> Result<MealData, Error> {
             return Ok(get_default_meal());
         }
     };
-    let mut meal = data.meals.into_iter().next().unwrap();
+    let mut meal = match data.meals.first() {
+        Some(meal) => meal.clone(),
+        None => {
+            error!("No meals found");
+            return Ok(get_default_meal());
+        }
+    };
     let encoded_thumbnail = encode_image_from_url(&meal.meal_thumbnail).await.unwrap();
 
     meal.meal_thumbnail = encoded_thumbnail;
