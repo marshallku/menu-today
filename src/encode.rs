@@ -10,24 +10,28 @@ pub async fn encode_image_from_url(url: &str) -> Result<String, String> {
         return Ok("".to_string());
     }
 
-    match get(url).await {
-        Ok(response) => match response.bytes().await {
-            Ok(bytes) => {
-                let mime = from_path(url).first_or_octet_stream().to_string();
-
-                Ok(general_purpose::STANDARD_NO_PAD.encode(&bytes))
-                    .map(|encoded| format!("data:{};base64,{}", mime, encoded))
-            }
-            Err(e) => {
-                error!("Error fetching data: {:?}", e);
-                Ok("".to_string())
-            }
-        },
+    let response = match get(url).await {
+        Ok(response) => response,
         Err(e) => {
-            error!("Error fetching data: {:?}", e);
-            Ok("".to_string())
+            error!("Error fetching image: {:?}", e);
+            return Ok("".to_string());
         }
-    }
+    };
+    let bytes = match response.bytes().await {
+        Ok(bytes) => bytes,
+        Err(e) => {
+            error!("Error reading image: {:?}", e);
+            return Ok("".to_string());
+        }
+    };
+    let mime = from_path(url).first_or_octet_stream();
+    let encoded = general_purpose::STANDARD_NO_PAD.encode(&bytes);
+
+    Ok(format!(
+        "data:{};base64,{}",
+        mime.to_string(),
+        encoded.to_string()
+    ))
 }
 
 #[cfg(test)]
