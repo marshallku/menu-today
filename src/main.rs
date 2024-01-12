@@ -2,6 +2,7 @@ mod cache;
 mod encode;
 mod fetcher;
 mod render;
+mod url;
 
 use axum::{
     body::Body,
