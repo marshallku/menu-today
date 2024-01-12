@@ -25,6 +25,12 @@ pub async fn encode_image_from_url(url: &str) -> Result<String, String> {
         }
     };
     let mime = from_path(url).first_or_octet_stream();
+
+    if mime.type_() != "image" {
+        error!("Invalid mime type: {:?}", mime.type_());
+        return Ok("".to_string());
+    }
+
     let encoded = general_purpose::STANDARD_NO_PAD.encode(&bytes);
 
     Ok(format!(
@@ -50,10 +56,17 @@ mod tests {
         )
     }
 
-    // test if fails on invalid url
     #[tokio::test]
     async fn test_encode_image_from_url_invalid_url() {
         let url = "https://www/";
+        let result = encode_image_from_url(url).await.unwrap();
+
+        assert_eq!(result, "");
+    }
+
+    #[tokio::test]
+    async fn test_encode_image_from_url_not_image() {
+        let url = "https://www.google.com";
         let result = encode_image_from_url(url).await.unwrap();
 
         assert_eq!(result, "");
