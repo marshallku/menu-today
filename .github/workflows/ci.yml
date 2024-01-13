@@ -12,12 +12,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-                  check-latest: true
-                  registry-url: https://registry.npmjs.org/
-            - run: npx cspell --no-progress '**/*'
+            - uses: marshallku/actions/check-spelling@master
     build:
         name: Build project
         runs-on: ubuntu-latest
@@ -35,9 +30,9 @@ jobs:
     send-notification:
         needs: [check-spelling, build, test]
         if: ${{ failure() }}
-        uses: marshallku/menu-today/.github/workflows/send_notification.yml@master
+        uses: marshallku/actions/.github/workflows/send-notification.yml@master
         with:
-            status: ${{ contains(join(needs.*.result, ','), 'failure') }}
+            failed: ${{ contains(join(needs.*.result, ','), 'failure') }}
             message: "CI job failed - push"
         secrets:
             url: ${{ secrets.DISCORD_WEBHOOK_URI }}
