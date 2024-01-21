@@ -14,6 +14,11 @@ where
     F: Fn() -> R + Send + Sync + 'static,
     R: std::future::Future<Output = Result<MealData, Error>> + Send,
 {
+    if state.fetch_in_progress.load(Ordering::SeqCst) {
+        let cached_data = state.cache.lock().unwrap();
+        return Ok(cached_data.clone());
+    }
+
     let cache = state.cache.lock().unwrap();
     let cached_data = cache.clone();
 
