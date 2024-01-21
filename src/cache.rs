@@ -27,6 +27,7 @@ where
 
     if fetch_in_progress.is_ok() {
         spawn(async move {
+            state.fetch_in_progress.store(true, Ordering::SeqCst);
             match fetch_fn().await {
                 Ok(new_data) => {
                     let mut cache = state.cache.lock().unwrap();
