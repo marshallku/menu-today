@@ -1,23 +1,23 @@
-FROM rust:1.73-alpine AS chef
+FROM rust:1.73-alpine AS base
 
 WORKDIR /usr/src/menu-today
 
 RUN set -eux; \
     apk add --no-cache musl-dev pkgconfig libressl-dev; \
-    cargo install cargo-chef; \
     rm -rf $CARGO_HOME/registry
 
-FROM chef as planner
+COPY Cargo.* .
 
-COPY . .
-RUN cargo chef prepare --recipe-path recipe.json
+RUN mkdir src && \
+    echo 'fn main() {println!("Hello, world!");}' > src/main.rs && \
+    cargo build --release && \
+    rm target/release/menu-today* && \
+    rm target/release/deps/menu_today* && \
+    rm -rf src
 
-FROM chef AS builder
+FROM base AS builder
 
-COPY --from=planner /usr/src/menu-today/recipe.json .
-RUN cargo chef cook --release --recipe-path recipe.json
-
-COPY . .
+COPY src src
 RUN cargo build --release
 
 FROM alpine:3.14
@@ -26,6 +26,6 @@ WORKDIR /usr/local/bin
 
 COPY --from=builder /usr/src/menu-today/target/release/menu-today .
 
-EXPOSE 41880
+EXPOSE 41890
 
 CMD ["./menu-today"]
