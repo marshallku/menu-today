@@ -1,6 +1,6 @@
 # Random Meal SVG Generator
 
-![Screenshot of generated meal svg](https://media.discordapp.net/attachments/1102888096007196733/1190657177820602438/marshallku.dev_48018_.png)
+![Screenshot of generated meal svg](https://github.com/marshall-ku/assets/assets/72745119/062a5f8d-d641-4015-b559-edcc74e0baba)
 
 The Random Meal SVG Generator is a web application built with Rust and Axum framework. It fetches random meal data from an external API and renders this data as an SVG image.
 
