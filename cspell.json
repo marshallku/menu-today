@@ -19,6 +19,7 @@
         "preconfigures",
         "Pretendard",
         "Promiseable",
+        "println",
         "referer",
         "reqwest",
         "treeshake",
