@@ -7,28 +7,28 @@ use crate::url::is_valid_url;
 
 pub async fn encode_image_from_url(url: &str) -> Result<String, String> {
     if !is_valid_url(url) {
-        return Ok("".to_string());
+        return Err("Invalid URL".to_string());
     }
 
     let response = match get(url).await {
         Ok(response) => response,
         Err(e) => {
             error!("Error fetching image: {:?}", e);
-            return Ok("".to_string());
+            return Err("Failed to fetch image".to_string());
         }
     };
     let bytes = match response.bytes().await {
         Ok(bytes) => bytes,
         Err(e) => {
             error!("Error reading image: {:?}", e);
-            return Ok("".to_string());
+            return Err("Failed to read image".to_string());
         }
     };
     let mime = from_path(url).first_or_octet_stream();
 
     if mime.type_() != "image" {
         error!("Invalid mime type: {:?}", mime.type_());
-        return Ok("".to_string());
+        return Err("Invalid mime type".to_string());
     }
 
     let encoded = general_purpose::STANDARD_NO_PAD.encode(&bytes);
@@ -59,16 +59,16 @@ mod tests {
     #[tokio::test]
     async fn test_encode_image_from_url_invalid_url() {
         let url = "https://www/";
-        let result = encode_image_from_url(url).await.unwrap();
+        let result = encode_image_from_url(url).await;
 
-        assert_eq!(result, "");
+        assert!(result.is_err());
     }
 
     #[tokio::test]
     async fn test_encode_image_from_url_not_image() {
         let url = "https://www.google.com";
-        let result = encode_image_from_url(url).await.unwrap();
+        let result = encode_image_from_url(url).await;
 
-        assert_eq!(result, "");
+        assert!(result.is_err());
     }
 }

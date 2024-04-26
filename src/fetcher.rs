@@ -52,7 +52,14 @@ pub async fn fetch_random_food() -> Result<MealData, Error> {
             return Ok(get_default_meal());
         }
     };
-    let encoded_thumbnail = encode_image_from_url(&meal.meal_thumbnail).await.unwrap();
+
+    let encoded_thumbnail = match encode_image_from_url(&meal.meal_thumbnail).await {
+        Ok(encoded_thumbnail) => encoded_thumbnail,
+        Err(e) => {
+            error!("Error encoding image: {:?}", e);
+            return Ok(get_default_meal());
+        }
+    };
 
     meal.meal_thumbnail = encoded_thumbnail;
 
