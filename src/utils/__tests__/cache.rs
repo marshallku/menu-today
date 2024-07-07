@@ -7,7 +7,7 @@ mod tests {
     use axum::extract::State;
     use reqwest::Error;
 
-    use crate::fetcher::MealData;
+    use crate::api::meal::MealData;
     use crate::utils::cache::fetch_and_cache;
     use crate::AppState;
 

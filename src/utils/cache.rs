@@ -4,7 +4,7 @@ use std::sync::atomic::Ordering;
 use tokio::spawn;
 use tracing::error;
 
-use crate::{fetcher::MealData, AppState};
+use crate::{api::meal::MealData, AppState};
 
 pub async fn fetch_and_cache<F, R>(
     fetch_fn: F,

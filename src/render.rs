@@ -1,7 +1,7 @@
 use handlebars::Handlebars;
 use std::{cmp::max, collections::HashMap, sync::Arc};
 
-use crate::fetcher::MealData;
+use crate::api::meal::MealData;
 
 const SVG_WIDTH: usize = 450;
 const IMAGE_WIDTH: usize = 200;

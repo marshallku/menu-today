@@ -1,7 +1,8 @@
-mod fetcher;
+mod api;
 mod render;
 mod utils;
 
+use api::meal::{get_default_meal, get_meal, MealData};
 use axum::{
     body::Body,
     extract::{Query, Request, State},
@@ -22,7 +23,7 @@ use utils::cache::fetch_and_cache;
 
 #[derive(Clone)]
 pub struct AppState {
-    pub cache: Arc<Mutex<fetcher::MealData>>,
+    pub cache: Arc<Mutex<MealData>>,
     pub fetch_in_progress: Arc<AtomicBool>,
     pub handlebars: Arc<handlebars::Handlebars<'static>>,
 }
@@ -46,7 +47,7 @@ async fn handle_request(
     headers.insert("Pragma", "no-cache".parse().unwrap());
     headers.insert("Expires", "0".parse().unwrap());
 
-    match fetch_and_cache(fetcher::fetch_random_food, State(state)).await {
+    match fetch_and_cache(get_meal, State(state)).await {
         Ok(data) => {
             let svg = render::render_svg(handlebars, &data, query.theme.clone());
             info!("Create svg image: {:?}", start_time.elapsed());
@@ -56,7 +57,7 @@ async fn handle_request(
         Err(e) => {
             error!("Error fetching data: {:?}", e);
 
-            let data = fetcher::get_default_meal();
+            let data = get_default_meal();
             let svg = render::render_svg(handlebars, &data, query.theme.clone());
 
             (StatusCode::OK, headers, svg)
@@ -100,7 +101,7 @@ async fn main() {
         .compact()
         .init();
 
-    let initial_data = fetcher::fetch_random_food().await.unwrap();
+    let initial_data = get_meal().await.unwrap();
     let handlebars = render::create_handlebars();
     let data = AppState {
         cache: Arc::new(Mutex::new(initial_data)),

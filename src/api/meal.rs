@@ -30,7 +30,7 @@ pub fn get_default_meal() -> MealData {
     }
 }
 
-pub async fn fetch_random_food() -> Result<MealData, Error> {
+pub async fn get_meal() -> Result<MealData, Error> {
     let response = match get("https://www.themealdb.com/api/json/v2/1/random.php").await {
         Ok(response) => response,
         Err(e) => {
@@ -72,7 +72,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_fetch_random_food_not_default() {
-        let meal = fetch_random_food().await.unwrap();
+        let meal = get_meal().await.unwrap();
         let default_meal = get_default_meal();
 
         assert!(meal.meal_name != default_meal.meal_name);
