@@ -2,7 +2,7 @@ use reqwest::{get, Error};
 use serde::Deserialize;
 use tracing::error;
 
-use crate::encode::encode_image_from_url;
+use crate::utils::encode::encode_image_from_url;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct MealData {

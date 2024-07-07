@@ -1,8 +1,6 @@
-mod cache;
-mod encode;
 mod fetcher;
 mod render;
-mod url;
+mod utils;
 
 use axum::{
     body::Body,
@@ -20,6 +18,7 @@ use std::{
 };
 use tower_http::trace::{self, TraceLayer};
 use tracing::{error, info, Level, Span};
+use utils::cache::fetch_and_cache;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -47,7 +46,7 @@ async fn handle_request(
     headers.insert("Pragma", "no-cache".parse().unwrap());
     headers.insert("Expires", "0".parse().unwrap());
 
-    match cache::fetch_and_cache(fetcher::fetch_random_food, State(state)).await {
+    match fetch_and_cache(fetcher::fetch_random_food, State(state)).await {
         Ok(data) => {
             let svg = render::render_svg(handlebars, &data, query.theme.clone());
             info!("Create svg image: {:?}", start_time.elapsed());
