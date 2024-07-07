@@ -1,68 +1,24 @@
 mod api;
 mod render;
+mod routes;
 mod utils;
 
-use api::meal::{get_default_meal, get_meal, MealData};
-use axum::{
-    body::Body,
-    extract::{Query, Request, State},
-    http::{HeaderMap, StatusCode},
-    response::IntoResponse,
-    routing::get,
-    Router,
-};
-use serde::Deserialize;
+use api::meal::{get_meal, MealData};
+use axum::{body::Body, extract::Request};
+use routes::app::app;
+
 use std::{
     env,
     sync::{atomic::AtomicBool, Arc, Mutex},
-    time::Instant,
 };
 use tower_http::trace::{self, TraceLayer};
-use tracing::{error, info, Level, Span};
-use utils::cache::fetch_and_cache;
+use tracing::{info, Level, Span};
 
 #[derive(Clone)]
 pub struct AppState {
     pub cache: Arc<Mutex<MealData>>,
     pub fetch_in_progress: Arc<AtomicBool>,
     pub handlebars: Arc<handlebars::Handlebars<'static>>,
-}
-
-#[derive(Deserialize)]
-pub struct SVGOption {
-    theme: Option<String>,
-}
-
-async fn handle_request(
-    query: Query<SVGOption>,
-    State(state): State<AppState>,
-) -> impl IntoResponse {
-    let start_time = Instant::now();
-    let handlebars = state.handlebars.clone();
-
-    let mut headers = HeaderMap::new();
-
-    headers.insert("Content-Type", "image/svg+xml".parse().unwrap());
-    headers.insert("Cache-Control", "no-cache".parse().unwrap());
-    headers.insert("Pragma", "no-cache".parse().unwrap());
-    headers.insert("Expires", "0".parse().unwrap());
-
-    match fetch_and_cache(get_meal, State(state)).await {
-        Ok(data) => {
-            let svg = render::render_svg(handlebars, &data, query.theme.clone());
-            info!("Create svg image: {:?}", start_time.elapsed());
-
-            (StatusCode::OK, headers, svg)
-        }
-        Err(e) => {
-            error!("Error fetching data: {:?}", e);
-
-            let data = get_default_meal();
-            let svg = render::render_svg(handlebars, &data, query.theme.clone());
-
-            (StatusCode::OK, headers, svg)
-        }
-    }
 }
 
 fn trace_layer_on_request(request: &Request<Body>, _span: &Span) {
@@ -109,8 +65,7 @@ async fn main() {
         handlebars,
     };
 
-    let app = Router::new()
-        .route("/", get(handle_request))
+    let app = app()
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
