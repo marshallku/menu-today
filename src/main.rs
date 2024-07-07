@@ -1,10 +1,12 @@
 mod api;
 mod render;
 mod routes;
+mod states;
 mod utils;
 
-use api::meal::{get_meal, MealData};
+use api::meal::get_meal;
 use routes::app::app;
+use states::app::AppState;
 use utils::log::trace_layer_on_request;
 
 use std::{
@@ -13,13 +15,6 @@ use std::{
 };
 use tower_http::trace::{self, TraceLayer};
 use tracing::{info, Level};
-
-#[derive(Clone)]
-pub struct AppState {
-    pub cache: Arc<Mutex<MealData>>,
-    pub fetch_in_progress: Arc<AtomicBool>,
-    pub handlebars: Arc<handlebars::Handlebars<'static>>,
-}
 
 #[tokio::main]
 async fn main() {
