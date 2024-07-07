@@ -10,7 +10,7 @@ use tracing::{error, info};
 
 use crate::{
     api::meal::{get_default_meal, get_meal},
-    render::render_svg,
+    pages,
     utils::cache::fetch_and_cache,
     AppState,
 };
@@ -33,7 +33,7 @@ pub async fn get(query: Query<SVGOption>, State(state): State<AppState>) -> impl
 
     match fetch_and_cache(get_meal, State(state)).await {
         Ok(data) => {
-            let svg = render_svg(handlebars, &data, query.theme.clone());
+            let svg = pages::index::render(handlebars, &data, query.theme.clone());
             info!("Create svg image: {:?}", start_time.elapsed());
 
             (StatusCode::OK, headers, svg)
@@ -42,7 +42,7 @@ pub async fn get(query: Query<SVGOption>, State(state): State<AppState>) -> impl
             error!("Error fetching data: {:?}", e);
 
             let data = get_default_meal();
-            let svg = render_svg(handlebars, &data, query.theme.clone());
+            let svg = pages::index::render(handlebars, &data, query.theme.clone());
 
             (StatusCode::OK, headers, svg)
         }

@@ -1,7 +1,8 @@
 mod api;
-mod render;
+mod pages;
 mod routes;
 mod states;
+mod templates;
 mod utils;
 
 use api::meal::get_meal;
@@ -24,7 +25,7 @@ async fn main() {
         .init();
 
     let initial_data = get_meal().await.unwrap();
-    let handlebars = render::create_handlebars();
+    let handlebars = templates::index::generate();
     let data = AppState {
         cache: Arc::new(Mutex::new(initial_data)),
         fetch_in_progress: Arc::new(AtomicBool::new(false)),
