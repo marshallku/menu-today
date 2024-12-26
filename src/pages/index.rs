@@ -23,7 +23,7 @@ pub fn render(
         _ => ("#bbb", "#121212"),
     };
 
-    let data = [
+    let data = HashMap::from([
         ("meal_name", meal.meal_name.to_string()),
         ("meal_country", meal.meal_country.to_string()),
         ("meal_category", meal.meal_category.to_string()),
@@ -33,10 +33,7 @@ pub fn render(
         ("image_x", image_x.to_string()),
         ("text_color", text_color.to_string()),
         ("background_color", background_color.to_string()),
-    ]
-    .iter()
-    .cloned()
-    .collect::<HashMap<_, _>>();
+    ]);
 
     handlebars.render("svg_template", &data).unwrap()
 }
